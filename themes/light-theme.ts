@@ -30,7 +30,6 @@ export const lightTheme = createTheme({
         },
       }
     },
-
     MuiTypography: {
       styleOverrides: {
         h1: {
@@ -47,8 +46,6 @@ export const lightTheme = createTheme({
         }
       }
     },
-
-
     MuiButton: {
       defaultProps: {
         variant: 'contained',
@@ -57,18 +54,18 @@ export const lightTheme = createTheme({
       },
       styleOverrides: {
         root: {
+          backgroundColor: 'white',
+          color: 'black',
           textTransform: 'none',
           boxShadow: 'none',
           borderRadius: 10,
           ":hover": {
-            backgroundColor: 'rgba(0,0,0,0.05)',
+            backgroundColor: 'rgba(0,0,0,0.1)',
             transition: 'all 0.3s ease-in-out'
           }
         }
       }
     },
-
-
     MuiCard: {
       defaultProps: {
         elevation: 0
@@ -79,7 +76,6 @@ export const lightTheme = createTheme({
           borderRadius: '10px',
         }
       }
-    }
-    
+    } 
   }
 });
