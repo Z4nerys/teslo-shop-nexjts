@@ -17,7 +17,7 @@ export const Navbar = () => {
             <Box flex={1}/>
 
             <Box sx={{ display: { xs: 'none', sm: 'block'} }}>
-                <NextLink href='/category/men' passHref legacyBehavior>
+                <NextLink href='/category/men' passHref legacyBehavior >
                     <Link>
                         <Button>Hombres</Button>
                     </Link>
