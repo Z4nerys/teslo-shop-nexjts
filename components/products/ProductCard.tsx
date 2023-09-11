@@ -1,5 +1,6 @@
-import { FC, useState, useMemo} from 'react';
-import { Box, Card, CardActionArea, CardMedia, Grid, Typography } from "@mui/material"
+import { FC, useState, useMemo } from 'react';
+import NextLink from 'next/link';
+import { Box, Card, CardActionArea, CardMedia, Grid, Typography, Link } from "@mui/material"
 
 import { IProduct } from '@/interfaces';
 
@@ -10,11 +11,11 @@ interface Props {
 export const ProductCard: FC<Props> = ({ product }) => {
 
     const [isHovered, setIsHovered] = useState(false)
-    
-    const productImage = useMemo( () => {
+
+    const productImage = useMemo(() => {
         return isHovered
-        ? `products/${product.images[1]}`
-        : `products/${product.images[0]}`
+            ? `products/${product.images[1]}`
+            : `products/${product.images[0]}`
     }, [isHovered, product.images])
 
     return (
@@ -23,20 +24,24 @@ export const ProductCard: FC<Props> = ({ product }) => {
             sm={4}
             md={4}
             lg={3}
-            xl={1}
+            xl={3}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             <Card>
-                <CardActionArea>
-                    <CardMedia
-                        component='img'
-                        className='fadeIn'
-                        image={productImage}
-                        alt={product.title}
-                        /* onLoad={() => console.log("cargo")} */
-                    />
-                </CardActionArea>
+                <NextLink href="/product/slug" passHref prefetch={false} legacyBehavior>
+                    <Link>
+                        <CardActionArea>
+                            <CardMedia
+                                component='img'
+                                className='fadeIn'
+                                image={productImage}
+                                alt={product.title}
+                            /* onLoad={() => console.log("cargo")} */
+                            />
+                        </CardActionArea>
+                    </Link>
+                </NextLink>
             </Card>
             <Box sx={{ mt: 1 }} className='fadeIn'>
                 <Typography fontWeight={700}>{product.title}</Typography>
