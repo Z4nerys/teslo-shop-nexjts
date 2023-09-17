@@ -21,7 +21,7 @@ const RegisterPage = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Button color='secondary' className='circular-btn' fullWidth>
-                            Ingresar
+                            Crear cuenta
                         </Button>
                     </Grid>
                     <Grid item xs={12} display='flex' justifyContent='end'>
