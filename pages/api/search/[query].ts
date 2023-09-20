@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { SHOP_CONSTANTS, db } from '@/database'
+import { db } from '@/database'
 import { Product } from '@/models'
 import { IProduct } from '@/interfaces'
 
@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     switch (req.method) {
         case 'GET':
-            return getProducts(req, res)
+            return searchProducts(req, res)
 
         default:
             return res.status(400).json({
@@ -20,22 +20,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 }
 
-const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-
-    const { gender = 'all' } = req.query;
-
-    let condition = {}
-
-    if( gender !== 'all' && SHOP_CONSTANTS.validGenders.includes(`${gender}`) ){
-        condition = { gender }
-    }
+const searchProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     await db.connect();
-    const products = await Product.find( condition )
+
+    let { query = '' } = req.query;
+
+    if( query.length === 0 ){
+        return res.status(400).json({
+            message: 'Debe especificar el query de la búsqueda'
+        })
+    }
+
+    query = query.toString().toLowerCase();
+
+    const products = await Product.find({ $text: { $search: query } })
                                 .select('title images price inStock slug -_id')
                                 .lean();
-
+ 
     await db.disconnect();
+    if( products.length === 0 ) return res.status(404).json({message: 'No pudimos encontrar el producto'})
     
     return res.status(200).json(products)
 }

@@ -5,13 +5,13 @@ import { IProduct } from '@/interfaces'
 
 type Data = 
     | { message: string } 
-    | IProduct[]
+    | IProduct
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     switch (req.method) {
         case 'GET':
-            return getProducts(req, res)
+            return getProductBySlug(req, res)
 
         default:
             return res.status(400).json({
@@ -20,22 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
 }
 
-const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-
-    const { gender = 'all' } = req.query;
-
-    let condition = {}
-
-    if( gender !== 'all' && SHOP_CONSTANTS.validGenders.includes(`${gender}`) ){
-        condition = { gender }
-    }
+const getProductBySlug = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     await db.connect();
-    const products = await Product.find( condition )
-                                .select('title images price inStock slug -_id')
-                                .lean();
 
+    const { slug = '' } = req.query;
+
+    const product = await Product.findOne({ slug })
+                                .select('-_id -createdAt -updatedAt -__v')
+                                .lean();
+ 
     await db.disconnect();
+    if(!product) return res.status(404).json({message: 'No pudimos encontrar el producto'})
     
-    return res.status(200).json(products)
+    return res.status(200).json(product)
 }
