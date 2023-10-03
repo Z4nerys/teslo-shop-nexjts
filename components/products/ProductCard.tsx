@@ -1,7 +1,8 @@
 import { FC, useState, useMemo } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { Box, Card, CardActionArea, CardMedia, Grid, Typography, Link } from "@mui/material"
-
+import { useProducts } from '../../hooks/useProducts';
 import { IProduct } from '@/interfaces';
 
 interface Props {
@@ -15,8 +16,8 @@ export const ProductCard: FC<Props> = ({ product }) => {
 
     const productImage = useMemo(() => {
         return isHovered
-            ? `products/${product.images[1]}`
-            : `products/${product.images[0]}`
+            ? `/products/${product.images[1]}`
+            : `/products/${product.images[0]}`
     }, [isHovered, product.images])
 
     return (
@@ -30,7 +31,7 @@ export const ProductCard: FC<Props> = ({ product }) => {
             onMouseLeave={() => setIsHovered(false)}
         >
             <Card>
-                <NextLink href="/product/slug" passHref prefetch={false} legacyBehavior>
+                <NextLink href={`/product/${ product.slug }`} passHref prefetch={false} legacyBehavior>
                     <Link>
                         <CardActionArea>
                             <CardMedia
