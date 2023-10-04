@@ -1,4 +1,4 @@
-import { NextPage, GetServerSideProps } from "next"
+import { NextPage, GetServerSideProps, GetStaticProps, GetStaticPaths } from "next"
 import { ShopLayout } from "@/components/layouts"
 import { ProductSlideshow, SizeSelector } from "@/components/products"
 import { ItemCounter } from "@/components/ui"
@@ -87,9 +87,9 @@ const ProductPage: NextPage<Props> = ({ product }) => {
 // getStaticPaths...
 
 // You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
-import { GetStaticPaths } from 'next'
 
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
+
     const productSlugs = await dbProducts.getAllProductSlugs()
 
     return {
@@ -103,5 +103,37 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
 }
 
 //getStaticProps, este es el que mando el producto al componente/page este (productPage)
+
+// You should use getStaticProps when:
+//- The data required to render the page is available at build time ahead of a user’s request.
+//- The data comes from a headless CMS.
+//- The data can be publicly cached (not user-specific).
+//- The page must be pre-rendered (for SEO) and be very fast — getStaticProps generates HTML and JSON files, both of which can be cached by a CDN for performance.
+
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+
+    const { slug = '' } = params as { slug: string } 
+    const product = await dbProducts.getProductBySlug( slug )
+
+    if( !product ){
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false //esto sirve para saber si ese slug es parte de la web o no,
+                //para marcarlo como permanentemente que no exista asi nunca mas lo toma,
+                //en este caso puede existir un producto con un slug que ahora no existe
+            }
+        }
+    }
+
+    return {
+        props: {
+            product
+        },
+        revalidate: 60 * 60 * 24
+    }
+}
+
 
 export default ProductPage
