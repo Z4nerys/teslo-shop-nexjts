@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import { useRouter } from "next/router"
-
 import { Box, Divider, Drawer, IconButton, Input, InputAdornment, List, ListItem, ListItemIcon, ListItemText, ListSubheader, ListItemButton } from "@mui/material"
 import { AccountCircleOutlined, AdminPanelSettings, CategoryOutlined, ConfirmationNumberOutlined, EscalatorWarningOutlined, FemaleOutlined, LoginOutlined, MaleOutlined, SearchOutlined, VpnKeyOutlined } from "@mui/icons-material"
 
@@ -33,6 +32,7 @@ export const SideMenu = () => {
                 <List>
                     <ListItem>
                         <Input
+                            autoFocus
                             value={ searchTerm }
                             onChange={ (e) => setSearchTerm( e.target.value ) }
                             onKeyUp={ (e) => e.key === 'Enter' ? onSearchTerm() : null}

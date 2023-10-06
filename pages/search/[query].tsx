@@ -1,22 +1,33 @@
 import { NextPage, GetServerSideProps } from "next"
 import { ShopLayout } from "@/components/layouts"
 import { ProductList } from "@/components/products"
-import { Typography } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { dbProducts } from '@/database';
 import { IProduct } from "@/interfaces"
 
 interface Props {
-    products: IProduct[]
+    products: IProduct[],
+    foundProducts: boolean,
+    query: string
 }
 
-const SearchPage: NextPage<Props> = ({ products }) => {
+const SearchPage: NextPage<Props> = ({ products, foundProducts, query }) => {
 
+    //asi no, TENGO QUE USAR EL: getServerSideProps
     //const { products, isLoading, isError } = useProducts('/search/haha')
 
     return (
         <ShopLayout title={'Teslo-shop - Search'} pageDescription={'Encuentra los mejores productos de Teslo aquí'}>
-            <Typography variant='h1' component='h1'>Buscar producto</Typography>
-            <Typography variant='h2' sx={{ mb: 1 }}>ABC --- 123</Typography>
+            <Typography variant='h1' component='h1'>Buscar productos</Typography>
+            {
+                foundProducts ?
+                <Typography variant='h2' sx={{ mb: 1 }} textTransform='capitalize'>{ query }</Typography>
+                :
+                <Box display='flex' >
+                    <Typography variant='h2' sx={{ mb: 1 }}>No encontramos productos ningún producto</Typography>
+                    <Typography variant='h2' sx={{ ml: 1 }} textTransform='capitalize' color='secondary'>{ query }</Typography>
+                </Box>
+            }
             
             <ProductList products={ products } />
 
@@ -42,13 +53,23 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
     let products = await dbProducts.getProductsByTerm( query )
 
+    const foundProducts = products.length > 0;
+
     //TODO: si no hay productos, mostrar sugerencias
     //x eso uso let y no const
 
+    if( !foundProducts ) {
+        //aca podria leer las cokies y buscar algo relacionado
+        // getProductsByTerm('shirt') por ejemplo o cualquier cosa
+        products = await dbProducts.getProductsByTerm('shirt')
+        //products = await dbProducts.getAllProducts()
+    }
 
     return {
         props: {
-            products
+            products,
+            foundProducts,
+            query
         }
     }
 }
