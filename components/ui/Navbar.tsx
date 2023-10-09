@@ -69,7 +69,7 @@ export const Navbar = () => {
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
-                                            onClick={() => setIsSearchVisible( false )}
+                                            onClick={() => setIsSearchVisible(false)}
                                         >
                                             <ClearOutlined />
                                         </IconButton>
@@ -78,9 +78,9 @@ export const Navbar = () => {
                             />
                         )
                         :
-                        <IconButton 
+                        <IconButton
                             sx={{ display: { xs: 'none', sm: 'flex' } }}
-                            onClick={() => setIsSearchVisible( true )}
+                            onClick={() => setIsSearchVisible(true)}
                             className='fadeIn'
                         >
                             <SearchOutlined />
