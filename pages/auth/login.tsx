@@ -1,10 +1,14 @@
-import React from 'react'
+import { useState, useContext } from 'react';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Button, Grid, Link, TextField, Typography } from '@mui/material'
+import { Box, Button, Chip, Grid, Link, TextField, Typography } from '@mui/material'
 import { useForm } from 'react-hook-form';
 
 import { AuthLayout } from '@/components/layouts'
 import { validations } from '@/utils';
+import { tesloApi } from '@/api';
+import { ErrorOutline } from '@mui/icons-material';
+import { AuthContext } from '@/context';
 
 type FormData = {
     email: string;
@@ -12,17 +16,27 @@ type FormData = {
 }
 
 const LoginPage = () => {
+    const router = useRouter()
+    const { loginUser } = useContext( AuthContext )
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>()
+    const [showError, setShowError] = useState(false)
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormData>()
 
-    console.log({errors})
+    const onLoginUser = async ({ email, password }: FormData) => {
 
-    const onLoginUser = (data: FormData) => {
-        console.log({ data })
+        setShowError(false)
+
+        const isValidLogin = await loginUser( email, password )
+
+        if( !isValidLogin ){
+            setShowError(true)
+            setTimeout(() => setShowError(false), 3000)
+            return
+        }
+
+        router.replace('/')
+        
+        // TODO: navegar a la pantalla a la cual el usuario estaba
     }
 
     return (
@@ -32,6 +46,14 @@ const LoginPage = () => {
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <Typography variant='h1' component='h1'>Iniciar Sesión</Typography>
+                                <Chip
+                                    label="La constraseña o el email es incorrecto"
+                                    color='error'
+                                    variant='outlined'
+                                    icon={<ErrorOutline />}
+                                    className='fadeIn'
+                                    sx={{display: showError ? 'flex' : 'none'}}
+                                />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
@@ -45,9 +67,9 @@ const LoginPage = () => {
                                     //y es lo mismo que: (val) => validations.isEmail(val)
 
                                 })}
-                                error={ !!errors.email } //doble negacion es como si no tuviera pero se hace
+                                error={!!errors.email} //doble negacion es como si no tuviera pero se hace
                                 //para manejarlo como un error booleano xq sino seria el objeto email
-                                helperText={ errors.email?.message }
+                                helperText={errors.email?.message}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -58,11 +80,11 @@ const LoginPage = () => {
                                 fullWidth
                                 {...register('password', {
                                     required: 'Este campo es requerido',
-                                    minLength: { value: 6, message: 'Mínimo 6 caracteres'}
+                                    minLength: { value: 6, message: 'Mínimo 6 caracteres' }
                                 })}
-                                error={ !!errors.password } //doble negacion es como si no tuviera pero se hace
+                                error={!!errors.password} //doble negacion es como si no tuviera pero se hace
                                 //para manejarlo como un error booleano xq sino seria el objeto email
-                                helperText={ errors.password?.message }
+                                helperText={errors.password?.message}
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -71,6 +93,7 @@ const LoginPage = () => {
                                 color='secondary'
                                 className='circular-btn'
                                 fullWidth
+                                disabled= {showError}
                             >
                                 Ingresar
                             </Button>
