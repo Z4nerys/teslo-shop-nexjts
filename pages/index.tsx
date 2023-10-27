@@ -1,3 +1,4 @@
+import { useContext } from 'react'
 import { NextPage } from 'next'
 import { Box, Typography } from '@mui/material'
 
@@ -9,6 +10,7 @@ import { FullScreenLoading } from '@/components/ui'
 const HomePage: NextPage = () => {
 
   const { products, isLoading, isError } = useProducts('/products')
+
 
   return (
     <ShopLayout title={'Teslo-shop - Home'} pageDescription={'Encuentra los mejores productos de Teslo aquí'}>

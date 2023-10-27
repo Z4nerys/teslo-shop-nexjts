@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import NextLink from 'next/link';
-import { AuthLayout } from '@/components/layouts'
-import { Box, Grid, Typography, TextField, Button, Link, Chip } from '@mui/material'
+import { useRouter } from 'next/router';
+
 import { useForm } from 'react-hook-form';
-import { tesloApi } from '@/api';
+
+import { Box, Grid, Typography, TextField, Button, Link, Chip } from '@mui/material'
+import { AuthLayout } from '@/components/layouts'
 import { validations } from '@/utils';
 import { ErrorOutline } from '@mui/icons-material';
+import { AuthContext } from '@/context';
 
 type FormData = {
     name: string;
@@ -15,26 +18,26 @@ type FormData = {
 
 const RegisterPage = () => {
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<FormData>()
-
-    const [showError, setShowError] = useState(false)
+    const router = useRouter()
+    const { registerUser } = useContext(AuthContext)
+    const { register, handleSubmit, formState: { errors }} = useForm<FormData>()
+    const [ showError, setShowError ] = useState(false)
+    const [ errorMessage, setErrorMessage ] = useState('')
 
     const onRegisterForm = async ({ name, email, password }: FormData) => {
+        
         setShowError(false)
-        try {
-            const { data } = await tesloApi.post('/user/register', { name, email, password })
-            const { token, user } = data;
-            console.log({ token, user })
-        } catch (error) {
-            console.log('Ese usuario ya esta registrado')
-            //console.log(error?.response?.data)
+        
+        const { hasError, message } = await registerUser(name, email, password)
+        
+        if( hasError ){
             setShowError(true)
+            setErrorMessage( message! ) //el signo de admiracion es para decirle que si viene, lo se xq yo puse que venga siempre
             setTimeout(() => setShowError(false), 3000)
+            return
         }
+        
+        router.replace('/')
     }
 
     return (
